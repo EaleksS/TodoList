@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { AiFillDelete } from 'react-icons/ai';
-import { idText } from 'typescript';
 
 function App() {
   const [value, setValue]: any = useState('');
@@ -9,9 +8,15 @@ function App() {
 
   useEffect(() => {
     async function fetchData() {
-      const res = await axios.get('https://jsonplaceholder.typicode.com/todos');
-      setTodos(res.data);
-      console.log(res.data);
+      try {
+        await axios
+          .get(`https://jsonplaceholder.typicode.com/todos?_limit=10`)
+          .then((res) => {
+            setTodos(res.data);
+          });
+      } catch (e) {
+        alert(e);
+      }
     }
     fetchData();
   }, []);
@@ -61,7 +66,9 @@ function App() {
             <div key={index} className="todo">
               <div className="title">
                 <input type="checkbox" />
-                <h3>{todo.title}</h3>
+                <h3>
+                  {index + 1}. {todo.title}
+                </h3>
               </div>
 
               <div className="delete" onClick={() => deleteTodo(index)}>
@@ -71,6 +78,7 @@ function App() {
           );
         })}
       </div>
+      <footer></footer>
     </div>
   );
 }
