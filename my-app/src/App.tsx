@@ -1,24 +1,76 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { AiFillDelete } from 'react-icons/ai';
+import { idText } from 'typescript';
 
 function App() {
+  const [value, setValue]: any = useState('');
+  const [todos, setTodos]: any = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const res = await axios.get('https://jsonplaceholder.typicode.com/todos');
+      setTodos(res.data);
+      console.log(res.data);
+    }
+    fetchData();
+  }, []);
+
+  const handleSubmit = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+
+  const addTodo = () => {
+    if (value !== '') {
+      setTodos([...todos, { title: value }]);
+      setValue('');
+    }
+  };
+
+  const deleteTodo = (todoIndex: number) => {
+    const newTodos = todos.filter((_: any, index: any) => index !== todoIndex);
+    setTodos(newTodos);
+  };
+
+  const removeTodo = () => {
+    setTodos([]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="wrapper">
+      <form className="form" onSubmit={(event: any) => handleSubmit(event)}>
+        <h1>TODO ЛИСТ</h1>
+        <label>
+          <input type="text" value={value} onChange={handleChange} />
+          <button type="submit" onClick={addTodo}>
+            ДОБАВИТЬ
+          </button>
+          <button type="button" onClick={removeTodo}>
+            ОЧИСТИТЬ
+          </button>
+        </label>
+      </form>
+
+      <div className="todos">
+        {todos.map((todo: any, index: number) => {
+          return (
+            <div key={index} className="todo">
+              <div className="title">
+                <input type="checkbox" />
+                <h3>{todo.title}</h3>
+              </div>
+
+              <div className="delete" onClick={() => deleteTodo(index)}>
+                <AiFillDelete />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
