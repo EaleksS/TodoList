@@ -5,6 +5,7 @@ import { AiFillDelete } from 'react-icons/ai';
 function App() {
   const [value, setValue]: any = useState('');
   const [todos, setTodos]: any = useState([]);
+  const [loading, setLoading]: any = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -13,6 +14,9 @@ function App() {
           .get(`https://jsonplaceholder.typicode.com/todos?_limit=10`)
           .then((res) => {
             setTodos(res.data);
+          })
+          .finally(() => {
+            setLoading(true);
           });
       } catch (e) {
         alert(e);
@@ -61,22 +65,24 @@ function App() {
       </form>
 
       <div className="todos">
-        {todos.map((todo: any, index: number) => {
-          return (
-            <div key={index} className="todo">
-              <div className="title">
-                <input type="checkbox" />
-                <h3>
-                  {index + 1}. {todo.title}
-                </h3>
-              </div>
+        {loading
+          ? todos.map((todo: any, index: number) => {
+              return (
+                <div key={index} className="todo">
+                  <div className="title">
+                    <input type="checkbox" />
+                    <h3>
+                      {index + 1}. {todo.title}
+                    </h3>
+                  </div>
 
-              <div className="delete" onClick={() => deleteTodo(index)}>
-                <AiFillDelete />
-              </div>
-            </div>
-          );
-        })}
+                  <div className="delete" onClick={() => deleteTodo(index)}>
+                    <AiFillDelete />
+                  </div>
+                </div>
+              );
+            })
+          : 'loading...'}
       </div>
       <footer></footer>
     </div>
